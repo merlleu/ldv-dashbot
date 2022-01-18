@@ -3,9 +3,6 @@ from .constants import *
 from .types import *
 from bs4 import BeautifulSoup
 
-import logging
-logging.basicConfig(level=logging.DEBUG - 5)
-
 class BotConfig: 
     email = ''
     password = ''
@@ -15,6 +12,7 @@ class AuthError(BaseException):
     def __repr__(self): return self.s
 
 class NotAuthenticatedError(BaseException):pass
+class InvalidCredentials(BaseException):pass
 
 class Bot:
     def __init__(self, email, password):
@@ -34,11 +32,16 @@ class Bot:
         next_link = self.client.post(AJAX_URL, data = {
             'act': 'ident_analyse',
             'login': self.config.email
-        }).text.split('"')[1].split('"')[0]
+        }).text
+
+        # if the ajax doesn't redirect the email is not good !
+        if 'location' not in next_link:
+            raise InvalidCredentials("Invalid Email !")
+        next_link = next_link.split('"')[1].split('"')[0]
 
         r = self.client.get(LDVNET_URL + next_link)
-        if r.status_code != 200:raise AuthError(str(r))
-        # print(r.headers, r.text)
+        if r.status_code != 200:
+            raise AuthError(str(r))
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -51,7 +54,8 @@ class Bot:
             'Password': self.config.password,
             'AuthMethod': 'FormsAuthentication'
         })
-        if r.status_code != 200:raise AuthError(str(r))
+        if r.status_code != 200:
+            raise AuthError(str(r))
 
         # at this step the server returns an html doc containing a form with callback data
         soup = BeautifulSoup(r.text, 'html.parser')
@@ -60,11 +64,14 @@ class Bot:
         for i in form.contents:
             if i.name == 'input':
                 reqdata[i.get('name')] = i.get('value')
+
+        # if action is relative path, this means the password is invalid !
+        if form.get('action').startswith('/'):
+            raise InvalidCredentials("Wrong password !")
+        
         r = self.client.post(form.get('action'), data = reqdata)
 
         # we should now have access to the dashboard !
-        with open('export.html', 'w') as f:f.write(r.text)
-
         self.parse_raw_homepage(r.text)
 
     def parse_raw_homepage(self, raw):
@@ -98,5 +105,6 @@ class Bot:
         else:
             return soup
 
-    def get_notes(self):
+    def get_grades(self):
         soup = self.request_html("GET", MARKS_URI)
+        
