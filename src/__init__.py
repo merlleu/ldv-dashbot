@@ -203,12 +203,12 @@ class Bot:
         print(table)
 
         for i in table.find_all("tr") :
-            sub = i.contents[1]
-            typ = i.contents[2]
-            dat = i.contents[3]
-            hou = i.contents[4]
-            dur = i.contents[5]
-            sta = i.contents[6]
+            sub = i.contents[3].contents[2].strip()
+            typ = i.contents[5].contents[0].strip()
+            dat = i.contents[7].contents[0].strip()
+            hou = i.contents[10].strip()
+            dur = i.contents[11].strip()
+            sta = i.contents[13].contents[0]
             absences.append(Absence(subject = sub, class_type = type, date = dat, hour = hou, duration = dur, state = sta))
         return absences
 
