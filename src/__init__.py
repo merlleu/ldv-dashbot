@@ -148,10 +148,12 @@ class Bot:
                     
                     for i in u[3].contents:
                         if i.name == 'li':
+                            name = _clean_string(i.contents[1].contents[2]).split(" ")
 
                             # parse subject !
                             subject = GradesSubject(
-                                name = _clean_string(i.contents[1].contents[2]),
+                                id = name[0],
+                                name = " ".join(name[1:]),
                                 grades = [],
                             )
 
@@ -197,6 +199,26 @@ class Bot:
                 semesters.append(semester)
         
         return semesters
+    
+    def get_abs(self) :
+        soup = self.request_html("GET", ABS_URI)
+        table = soup.find(class_ = 'table').find("tbody")
+
+        absences = []
+        for i in table.find_all("tr") :
+            absences.append(Absence(
+                subject_id = _clean_string(i.contents[3].contents[1].getText()),
+                subject_name = _clean_string(i.contents[3].contents[2]),
+                class_type = _clean_string(i.contents[5].getText()), 
+                date = _clean_string(i.contents[7].getText()), 
+                hour = _clean_string(i.contents[8].getText()), 
+                duration = _clean_string(i.contents[10].getText()), 
+                state = _clean_string(i.contents[12].getText())
+            ))
+        
+        return absences
+
+
 
 def _clean_string(s):
     # we remove garbage from start & tail of str
