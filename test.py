@@ -13,5 +13,7 @@ print(f"Connected as {bot.user}")
 # Exporting grades 
 with open('grades.json', 'wb') as f:
     d = bot.get_grades()
+    a = bot.get_abs()
     # src.DataClass.json(d) allows you to transform any kind of data (dict, list, DataClass, and others) to a json-serializable object
     f.write(json.dumps(src.DataClass.json(d), indent=2).encode('utf-8'))
+    f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))
