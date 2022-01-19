@@ -47,3 +47,11 @@ class Grade(DataClass):
     max_grade: float
     promo_average: float
     name: str
+
+class Absence(DataClass) :
+    subject: str
+    class_type: str
+    date: str
+    hour: str
+    class_duration: str
+    state : str
