@@ -158,14 +158,17 @@ class Bot:
                             # parse subject final grades
                             # those are set only once all grades are set.
                             if len(i.contents[1].contents[3].contents) > 2:
-
-                                subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
-                                if len(i.contents[1].contents) > 6:
-                                    subject.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
-                                    subject.coeff = float(i.contents[1].contents[10].contents[0].split(' ')[-1])
+                                a = i.contents[1].contents[3].find('a')
+                                if a:
+                                    subject.evaluation_link = a.get('href')
                                 else:
-                                    subject.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
-                                    subject.coeff = float(i.contents[1].contents[5].contents[4].contents[0].split(' ')[-1])
+                                    subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
+                                    if len(i.contents[1].contents) > 6:
+                                        subject.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
+                                        subject.coeff = float(i.contents[1].contents[10].contents[0].split(' ')[-1])
+                                    else:
+                                        subject.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
+                                        subject.coeff = float(i.contents[1].contents[5].contents[4].contents[0].split(' ')[-1])
                             
                             
                             # get subject public grades (sometimes they are all hidden !)

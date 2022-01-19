@@ -41,6 +41,7 @@ class GradesSubject(DataClass):
     promo_average: float
     final_grade: float
     grade_max: float
+    evaluation_link: str
 
 class Grade(DataClass):
     grade: float
