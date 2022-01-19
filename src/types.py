@@ -36,6 +36,7 @@ class SemesterUnit(DataClass):
 
 class GradesSubject(DataClass):
     name: str
+    id: str
     coeff: float
     grades: list
     promo_average: float
@@ -49,7 +50,8 @@ class Grade(DataClass):
     name: str
 
 class Absence(DataClass) :
-    subject: str
+    subject_id: str
+    subject_name: str
     class_type: str
     date: str
     hour: str

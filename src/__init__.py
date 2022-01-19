@@ -148,10 +148,12 @@ class Bot:
                     
                     for i in u[3].contents:
                         if i.name == 'li':
+                            name = _clean_string(i.contents[1].contents[2]).split(" ")
 
                             # parse subject !
                             subject = GradesSubject(
-                                name = _clean_string(i.contents[1].contents[2]),
+                                id = name[0],
+                                name = " ".join(name[1:]),
                                 grades = [],
                             )
 
@@ -200,16 +202,17 @@ class Bot:
         table = soup.find(class_ = 'table').find("tbody")
 
         absences = []
-        print(table)
-
         for i in table.find_all("tr") :
-            sub = i.contents[3].contents[2].strip()
-            typ = i.contents[5].contents[0].strip()
-            dat = i.contents[7].contents[0].strip()
-            hou = i.contents[10].strip()
-            dur = i.contents[11].strip()
-            sta = i.contents[13].contents[0]
-            absences.append(Absence(subject = sub, class_type = type, date = dat, hour = hou, duration = dur, state = sta))
+            absences.append(Absence(
+                subject_id = _clean_string(i.contents[3].contents[1].getText()),
+                subject_name = _clean_string(i.contents[3].contents[2]),
+                class_type = _clean_string(i.contents[5].getText()), 
+                date = _clean_string(i.contents[7].getText()), 
+                hour = _clean_string(i.contents[8].getText()), 
+                duration = _clean_string(i.contents[10].getText()), 
+                state = _clean_string(i.contents[12].getText())
+            ))
+        
         return absences
 
 
