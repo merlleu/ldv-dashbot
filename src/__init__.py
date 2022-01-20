@@ -1,8 +1,11 @@
 import requests
 from .constants import *
 from .types import *
+from .months import *
 import pickle, os, logging
 from bs4 import BeautifulSoup
+from datetime import datetime, timedelta
+
 
 class BotConfig: 
     email = ''
@@ -217,9 +220,54 @@ class Bot:
             ))
         
         return absences
+    
+    def get_day_presences(self):
+        soup = self.request_html("GET", PRESENCE_URI)
+        table = soup.find(id="body_presences")
+        presences = []
+        date = soup.find(class_ = "panel-title").getText().strip().split()
+        day = datetime(
+            day=int(date[-3]), 
+            month=1 + MONTHS.index(date[-2]) // 2, 
+            year=int(date[-1])
+        )
+        
+        for p in table.find_all("tr"):
+            tdl = p.find_all("td")
+            hours = tdl[0].getText().split()
+            
+            hosts = []
+            for h in _clean_string(tdl[2].getText()).split(","):
+                first_name, last_name = h.split()
+                hosts.append(User(first_name=first_name, last_name=last_name))
 
+            pres = Presence(
+                start_time = day + _parse_timestr(hours[0]),
+                end_time = day + _parse_timestr(hours[-1][1:]),
+                subject_name = _clean_string(tdl[1].getText()),
+                id = int(tdl[3].find('a').get('href').split('/')[-1]),
+                hosts = hosts,
+                success = p.get('class') == 'success'
+            )
 
+            # only if a zoom conference is configured for this class
+            if tdl[4].find('a') is not None:
+                pres.meeting_url = tdl[4].find('a').getText()
+                pres.meeting_url_with_password = tdl[4].find('a').get('href')
+                pres.meeting_password = tdl[4].find('span').get('title').split()[-1]
+        
+            presences.append(pres)
+        return presences
+    
+    def get_class_presence(self, class_id: int):
+        return
 
+    def set_class_presence(self, class_id: int):
+        r = self.client.post(PRESENCE_UPLOAD_URI, data= {
+            'act': 'set_present',
+            'seance_pk': str(class_id)
+        })
+        
 def _clean_string(s):
     # we remove garbage from start & tail of str
     s = s.strip()
@@ -229,3 +277,7 @@ def _clean_string(s):
     if '\n' in s:
         s = " ".join([_.strip() for _ in s.split('\n')])
     return s
+
+def _parse_timestr(s: str):
+    h, m = map(int, s.split(':'))
+    return timedelta(hours=h, minutes =m)

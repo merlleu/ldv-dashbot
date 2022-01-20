@@ -1,3 +1,4 @@
+from datetime import datetime
 
 class DataClass:
     def __init__(self, **kwargs):
@@ -14,6 +15,8 @@ class DataClass:
             return [DataClass.json(_) for _ in c]
         elif isinstance(c, dict):
             return {k: DataClass.json(v) for k,v in c.items()}
+        elif isinstance(c, datetime):
+            return c.isoformat()
         else:
             return c
     
@@ -58,3 +61,21 @@ class Absence(DataClass) :
     hour: str
     class_duration: str
     state : str
+
+
+class Presence(DataClass):
+    start_time: datetime.date
+    end_time: datetime.date
+    subject_name: str
+    id: int
+    hosts: list
+
+    # zoom
+    meeting_url: str
+    meeting_url_with_password: str
+    meeting_passwod: str
+
+    # state
+    opened: bool # if the presence is opened by the host
+    success: bool # if the presence has been validated by student
+    success_time: datetime

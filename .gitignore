@@ -1,5 +1,5 @@
 __pycache__
 export.html
-grades.json
 cookies.cache
-abs.json
+*.html
+*.json
