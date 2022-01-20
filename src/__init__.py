@@ -247,7 +247,7 @@ class Bot:
                 subject_name = _clean_string(tdl[1].getText()),
                 id = int(tdl[3].find('a').get('href').split('/')[-1]),
                 hosts = hosts,
-                success = p.get('class') == 'success'
+                success = p.get('class') == ['success']
             )
 
             # only if a zoom conference is configured for this class
