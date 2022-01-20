@@ -20,11 +20,11 @@ print(f"Connected as {bot.user}")
 #     a = bot.get_abs()
 #     f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))
 
-with open('presences.json', 'wb') as f:
-    a = bot.get_day_presences()
-    f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))
+# with open('presences.json', 'wb') as f:
+#     a = bot.get_day_presences()
+#     f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))
 
-for c in a:
-    with open(f'presences_{c.id}.json', 'wb') as f:
-        a = bot.get_class_presence(c.id)
-        f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))
+# for c in a:
+#     with open(f'presences_{c.id}.json', 'wb') as f:
+#         a = bot.get_class_presence(c.id)
+#         f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))

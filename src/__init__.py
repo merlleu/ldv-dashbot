@@ -312,7 +312,17 @@ class Bot:
             'act': 'set_present',
             'seance_pk': str(class_id)
         })
-        
+        return r
+    
+    def set_lang(self, lang: str, skip_check: bool = False):
+        if not skip_check and lang not in ['fr', 'en']:
+            raise Exception("Don't use a lang not supported by the website, you may end up stuck without the ability to change it back !\nadd the argument skip_check=True to avoid this error.")
+        r = self.client.post(SUTDENT_UPLOAD_URI, data= { 
+            'act' : 'chg_lang',
+            'lang' : lang
+        })
+        return r
+    
 def _clean_string(s):
     # we remove garbage from start & tail of str
     s = s.strip()
