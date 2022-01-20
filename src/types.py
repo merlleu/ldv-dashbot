@@ -17,6 +17,8 @@ class DataClass:
             return {k: DataClass.json(v) for k,v in c.items()}
         elif isinstance(c, datetime):
             return c.isoformat()
+        elif isinstance(c, Enum):
+            return c._name_
         else:
             return c
     
@@ -62,6 +64,13 @@ class Absence(DataClass) :
     class_duration: str
     state : str
 
+from enum import Enum
+class PresenceState(Enum):
+    NOT_YET_OPEN = 0
+    OPEN = 1
+    CLOSED = 2
+    def can_submit(self):
+        return self == OPEN
 
 class Presence(DataClass):
     start_time: datetime.date
@@ -76,6 +85,6 @@ class Presence(DataClass):
     meeting_passwod: str
 
     # state
-    opened: bool # if the presence is opened by the host
+    state: PresenceState # if the presence is opened by the host
     success: bool # if the presence has been validated by student
     success_time: datetime

@@ -1,6 +1,7 @@
 import requests
 from .constants import *
 from .types import *
+from .errors import *
 from .months import *
 import pickle, os, logging
 from bs4 import BeautifulSoup
@@ -12,12 +13,6 @@ class BotConfig:
     password = ''
     cookies_cache = None
 
-class AuthError(BaseException):
-    def __init__(self, s): self.s = s
-    def __repr__(self): return self.s
-
-class NotAuthenticatedError(BaseException):pass
-class InvalidCredentials(BaseException):pass
 
 class Bot:
     def __init__(self, email, password, **kwargs):
@@ -122,7 +117,9 @@ class Bot:
 
     def request_html(self, method, url, **kwargs):
         r = self.client.request(method, url, **kwargs, allow_redirects=False)
-
+        if r.status_code != 200:
+            raise UnsuccessfullResponse(r)
+        
         soup = BeautifulSoup(r.content.decode('utf-8'), 'html.parser')
         if soup.find('btn_connect') is not None:
             self.login(False)
@@ -260,7 +257,55 @@ class Bot:
         return presences
     
     def get_class_presence(self, class_id: int):
-        return
+        try:
+            soup = self.request_html("GET", f"{PRESENCE_URI}{class_id}")
+        except e:
+            # handle not found !
+            if e.status_code == 302: raise PresenceClassNotFound(f"Couldn't find a class with the id = {class_id}.")
+            raise e
+        
+        tdl = soup.find("tbody").find_all("td")
+        # parse dates
+        date = _clean_string(tdl[0].getText()).split('/')
+        day = datetime(
+            day=int(date[0]), 
+            month=int(date[1]), 
+            year=int(date[2])
+        )
+        hours = tdl[1].getText().split(' - ')
+
+        # parse hosts
+        hosts = []
+        hosts_raw = [_clean_string(tdl[2].getText())] if tdl[2].find('li') is None else [_clean_string(_.getText()) for _ in tdl[2].find_all('li')]
+        
+
+        for h in hosts_raw:
+            first_name, last_name = h.split()
+            hosts.append(User(first_name=first_name, last_name=last_name))
+        
+        pres = Presence(
+                start_time = day + _parse_timestr(hours[0], 'h'),
+                end_time = day + _parse_timestr(hours[1], 'h'),
+                subject_name = _clean_string(soup.find(id = 'recap_cours').find('h3').getText()),
+                id = int(class_id),
+                hosts = hosts
+        )
+
+        body_presence = soup.find(id = 'body_presence')
+        
+        for p in body_presence.find_all('div'):
+            c = p.getText()
+            if 'pas encore ouvert' in c:
+                pres.state = PresenceState.NOT_YET_OPEN
+
+            # TODO: PresenceState: handle OPEN and CLOSED
+            # TODO: handle success & parse success_time
+        if tdl[3].find('a') is not None:
+            pres.meeting_url = tdl[3].find('a').getText()
+            pres.meeting_url_with_password = tdl[3].find('a').get('href')
+            pres.meeting_password = tdl[3].find('span').get('title').split()[-1]
+
+        return pres
 
     def set_class_presence(self, class_id: int):
         r = self.client.post(PRESENCE_UPLOAD_URI, data= {
@@ -278,6 +323,6 @@ def _clean_string(s):
         s = " ".join([_.strip() for _ in s.split('\n')])
     return s
 
-def _parse_timestr(s: str):
-    h, m = map(int, s.split(':'))
+def _parse_timestr(s: str, sep: str = ":"):
+    h, m = map(int, s.split(sep))
     return timedelta(hours=h, minutes =m)
