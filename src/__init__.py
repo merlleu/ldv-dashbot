@@ -6,13 +6,14 @@ from .months import *
 import pickle, os, logging
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
-
+import time
 
 class BotConfig: 
     email = ''
     password = ''
     cookies_cache = None
 
+class NotImplemented(BaseException): pass
 
 class Bot:
     def __init__(self, email, password, **kwargs):
@@ -30,17 +31,17 @@ class Bot:
         # load cookies
         if cold and self.config.cookies_cache and os.path.exists(self.config.cookies_cache):
             with open(self.config.cookies_cache, 'rb') as f:
-                logging.info("Loaded cookies cache !")
+                logging.debug("Loaded cookies cache !")
                 self.client.cookies = pickle.load(f)
         
         # first of all we attempt a redirect to the login page
         r = self.client.get(LDVNET_URL)
 
         if self.parse_raw_homepage(r.text):
-            logging.info("Logged-in from cache !")
+            logging.debug("Logged-in from cache !")
             return
         else:
-            logging.info("Logged-in from cache !")
+            logging.debug("Logged-in from cache !")
 
         next_link = self.client.post(AJAX_URL, data = {
             'act': 'ident_analyse',
@@ -256,12 +257,12 @@ class Bot:
             presences.append(pres)
         return presences
     
-    def get_class_presence(self, class_id: int):
+    def get_seance_presence(self, seance_id: int):
         try:
-            soup = self.request_html("GET", f"{PRESENCE_URI}{class_id}")
+            soup = self.request_html("GET", f"{PRESENCE_URI}{seance_id}")
         except e:
             # handle not found !
-            if e.status_code == 302: raise PresenceClassNotFound(f"Couldn't find a class with the id = {class_id}.")
+            if e.status_code == 302: raise PresenceSeanceNotFound(f"Couldn't find a seance with the id = {seance_id}.")
             raise e
         
         tdl = soup.find("tbody").find_all("td")
@@ -287,7 +288,7 @@ class Bot:
                 start_time = day + _parse_timestr(hours[0], 'h'),
                 end_time = day + _parse_timestr(hours[1], 'h'),
                 subject_name = _clean_string(soup.find(id = 'recap_cours').find('h3').getText()),
-                id = int(class_id),
+                id = int(seance_id),
                 hosts = hosts
         )
 
@@ -307,20 +308,123 @@ class Bot:
 
         return pres
 
-    def set_class_presence(self, class_id: int):
+    def set_class_presence(self, seance_id: int):
         r = self.client.post(PRESENCE_UPLOAD_URI, data= {
             'act': 'set_present',
-            'seance_pk': str(class_id)
+            'seance_pk': str(seance_id)
         })
         return r
     
     def set_lang(self, lang: str, skip_check: bool = False):
         if not skip_check and lang not in ['fr', 'en']:
             raise Exception("Don't use a lang not supported by the website, you may end up stuck without the ability to change it back !\nadd the argument skip_check=True to avoid this error.")
-        r = self.client.post(SUTDENT_UPLOAD_URI, data= { 
+        r = self.client.post(STUDENT_UPLOAD_URI, data= { 
             'act' : 'chg_lang',
             'lang' : lang
         })
+        return r
+
+class OAuth2Provider:
+    access_token = None
+    refresh_token = None
+    access_expires_at = None
+    refresh_expires_at = None
+    def __init__(self, config: BotConfig, client: requests.Session):
+        self.config = config
+        self.client = client
+    
+    def get_authorization_code(self, n=0):
+        if n > 2:return
+        r =  self.client.post(OA2_AUTHORIZE, params = {
+            'response_type': 'code',
+            'client_id': OA2_CLIENT_ID,
+            'redirect_uri': OA2_REDIRECT_URI,
+        }, data = {
+            'UserName': self.config.email,
+            'Password': self.config.password,
+            'AuthMethod': 'FormsAuthentication'
+        }, allow_redirects=False)
+        if r.headers.get('Location').startswith(OA2_REDIRECT_URI):
+            return r.headers.get('Location').split('?code=')[1].split('&')[0]
+        else:
+            return self.get_authorization_code(n+1)
+    
+    def exchange_token(self):
+        t = self.client.post(OA2_TOKEN, data={
+            'grant_type': 'authorization_code',
+            'code': self.get_authorization_code(),
+            'client_id': OA2_CLIENT_ID,
+            'redirect_uri': OA2_REDIRECT_URI
+        }).json()
+        self.handle_token_response(t)
+        
+    
+    def do_refresh_token(self):
+        t = self.client.post(OA2_TOKEN, data={
+            'grant_type': 'refresh_token',
+            'refresh_token': self.refresh_token,
+            'client_id': OA2_CLIENT_ID,
+        }).json()
+        self.handle_token_response(t)
+    
+    def handle_token_response(self, resp):
+        if 'access_token' in resp:
+            self.access_token = resp['access_token']
+            self.access_expires_at = resp['expires_in'] + time.time()
+            logging.debug(
+                'OAuth2Provider :: Received new access_token, expires in {} seconds.'.format(resp['expires_in']))
+        if 'refresh_token' in resp:
+            self.refresh_token = resp['refresh_token']
+            self.refresh_expires_at = resp['refresh_token_expires_in'] + time.time()
+            logging.debug(
+                'OAuth2Provider :: Received new refresh_token, expires in {} seconds.'.format(resp['refresh_token_expires_in']))
+            
+    def get_access_token(self):
+        if self.access_token is None or self.refresh_expires_at < time.time() + 60:
+            self.exchange_token()
+        elif self.access_expires_at < time.time() + 60:
+            self.do_refresh_token()
+        
+        return f'Bearer {self.access_token}'
+
+    def request(self, method, url, **kwargs) -> (dict, int):
+        r = self.client.request(method, url, headers = {
+            'Authorization': self.get_access_token()
+        }, **kwargs)
+        return r.json()
+    
+
+class Api:
+    def __init__(self, email, password, **kwargs):
+        self.config = BotConfig()
+        self.config.email = email
+        self.config.password = password
+
+        client = requests.Session()
+        client.headers.update({'User-Agent': USER_AGENT})
+
+        self.oauth2 = OAuth2Provider(self.config, client)
+    
+    def get_absences(self, transform=False):
+        r = self.oauth2.request('GET', API_STUDENT_ABSENCES)
+        if transform:
+            raise NotImplemented("Parser not implemented for this endpoint")
+        return r
+    
+    def get_profile(self, transform=False):
+        r = self.oauth2.request('GET', API_STUDENT_PROFILE)
+        if transform:
+            raise NotImplemented("Parser not implemented for this endpoint")
+        return r
+    
+    def get_presences(self, transform=False):
+        r = self.oauth2.request('GET', API_STUDENT_PRESENCES)
+        if transform:
+            raise NotImplemented("Parser not implemented for this endpoint")
+        return r
+    
+    def set_present(self, seance_id):
+        r = self.oauth2.request('POST', API_STUDENT_PRESENCE.format(seance_id))
         return r
     
 def _clean_string(s):
