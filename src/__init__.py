@@ -3,6 +3,7 @@ from .constants import *
 from .types import *
 from .errors import *
 from .months import *
+from .ics import *
 import pickle, os, logging
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta

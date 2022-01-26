@@ -3,7 +3,7 @@ import src
 import logging
 import json
 
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.DEBUG)
 
 # app mode
 api = src.Api(input('Email > '), getpass.getpass("Password > "))

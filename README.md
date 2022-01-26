@@ -19,9 +19,9 @@ This is why you should consider using the API if the available endpoints are suf
 | Get authenticated user profile            | bot.user                                                                             | api.get_profile()          |
 | Get user absences                         | bot.get_abs()                                                                        | api.get_absences()         |
 | Get user presences of the day             | bot.get_day_presences() *Doesn't tell you if you are marked as present on a seance.* | api.get_presences()        |
-| Get user presences for a specific seance  | bot.get_class_presence(seance_id) *Use this to know if you are marked as present !*  | -                          |
-| Set user as present for a specific seance | bot.set_class_presence(seance_id) **Unfinished**                                     | api.set_present(seance_id) |
-| Get user grades                           | bot.get_grades()                                                                     | -                           |
+| Get user presences for a specific seance  | bot.get_class_presence(seance_id) **Unfinished**                                     | -                          |
+| Set user as present for a specific seance | bot.set_class_presence(seance_id)                                                    | api.set_present(seance_id) |
+| Get user grades                           | bot.get_grades()                                                                     | -                          |
 
 ## FAQ
 
