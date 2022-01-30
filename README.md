@@ -3,8 +3,8 @@ A library to help you automate interactions with LDV's dashboard (such as tracki
 
 ## What is the Api ?
 Recently, LDV decided to deploy the app MyDeVinci (com.devinci.mobile / fr.devinci.student).
-This app uses protocols such OAuth2 for authentication, wich is way better than the SAML (via cookies) implementation of the Bot.
-This is why you should consider using the API if the available endpoints are sufficiants for your use case (should be more stable than our html parser).
+This app uses protocols such as OAuth2 for authentication, which is way better than the SAML (via cookies) implementation of the Bot.
+This is why you should consider using the API if the available endpoints are sufficients for your use case (should be more stable than our html parser).
 
 
 ## INSTALL 
