@@ -1,12 +1,12 @@
 import getpass
-import src
+import ldv_dashbot
 import logging
 import json
 
 logging.basicConfig(level=logging.DEBUG)
 
 # app mode
-api = src.Api(input('Email > '), getpass.getpass("Password > "))
+api = ldv_dashbot.Api(input('Email > '), getpass.getpass("Password > "))
 
 with open('profile.json', 'wb') as f:
     user = api.get_profile()

@@ -1,12 +1,12 @@
 import getpass
-import src
+import ldv_dashbot
 import logging
 import json
 
 logging.basicConfig(level=logging.INFO)
 
 # crawler mode
-bot = src.Bot(input('Email > '), getpass.getpass("Password > "), cookies_cache="cookies.cache")
+bot = ldv_dashbot.Bot(input('Email > '), getpass.getpass("Password > "), cookies_cache="cookies.cache")
 print(f"Connected as {bot.user}")
 
 # Exporting grades 

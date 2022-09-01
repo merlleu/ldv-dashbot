@@ -4,14 +4,14 @@ import json
 import time
 import os
 import sys
-import src
+import ldv_dashbot
 import requests
 from dictdiffer import diff, patch, swap, revert
 
 logging.basicConfig(level=logging.INFO)
 
 webhook_url = input("Webhook url > ")
-bot = src.Bot(input('Email > '), getpass.getpass("Password > "), cookies_cache="cookies.cache", )
+bot = ldv_dashbot.Bot(input('Email > '), getpass.getpass("Password > "), cookies_cache="cookies.cache", )
 print(f"Connected as {bot.user}")
 
 def send_webhook(c):
@@ -52,7 +52,7 @@ def renderPath(d, path):
 # Exporting grades 
 while True:
     try:
-        new = src.DataClass.json(bot.get_grades())
+        new = ldv_dashbot.DataClass.json(bot.get_grades())
         with open('grades.json') as f:
             old = json.loads(f.read())
 

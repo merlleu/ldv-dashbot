@@ -4,7 +4,7 @@ t = requests.get(
     input('Calendar URL > ')
     ).text
 
-from src import ICSCalendar
+from ldv_dashbot import ICSCalendar
 c = ICSCalendar(t)
 
 with open('calendar.json', 'wb') as f:
