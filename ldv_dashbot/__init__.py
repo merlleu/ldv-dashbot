@@ -103,7 +103,7 @@ class Bot:
         user = User()
         for n, c in enumerate(addr.contents):
             if c.name == 'div':
-                _, user.first_name, user.last_name, _ = c.contents[0].split(' ')
+                _, user.first_name, user.last_name, *_ = c.contents[0].split(' ')
             if c.name == 'b':
                 key = c.contents[0]
                 if key == "Identifiant":
