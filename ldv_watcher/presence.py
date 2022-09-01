@@ -8,7 +8,12 @@ def start_presence_loop(cfg):
     api = ldv_dashbot.Api(cfg['email'], cfg['pass'])
 
     appels_ouverts = {}
-    ical = ldv_dashbot.API_STUDENT_ICAL.format(api.get_profile()['ical_token'])
+    profile = api.get_profile()
+    if 'ical_token' not in profile:
+        message = profile.get('message', profile)
+        logging.error('presence[{}] :: Something went wrong: {}. Aborting.'.format(cfg['email'], message))
+        return
+    ical = ldv_dashbot.API_STUDENT_ICAL.format(profile['ical_token'])
     logging.info("presence[{}] :: ical url : {}".format(cfg['email'], ical))
 
     while True:
