@@ -96,24 +96,11 @@ class Bot:
 
     def parse_raw_homepage(self, raw):
         soup = BeautifulSoup(raw, 'html.parser')
-        addr = soup.find_all('address')
+        addr = soup.find_all('div', class_ = 'social-box')
         if not addr:
             return False
-        addr = addr[0]
         user = User()
-        for n, c in enumerate(addr.contents):
-            if c.name == 'div':
-                _, user.first_name, user.last_name, *_ = c.contents[0].split(' ')
-            if c.name == 'b':
-                key = c.contents[0]
-                if key == "Identifiant":
-                    user.id = addr.contents[n+1].split(' ')[-1]
-                elif key == "Numéro de badge":
-                    user.badge_number = addr.contents[n+1].split(' ')[-1]
-                elif key == "Numéro client":
-                    user.client_number = addr.contents[n+1].split(' ')[-1]
-                elif key == "Id. Administratif":
-                    user.admin_id = addr.contents[n+2].contents[0].split(' ')[-1]
+        
         self.user = user
         return True
 

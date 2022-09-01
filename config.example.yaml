@@ -1,0 +1,42 @@
+# Rename this file to config.yaml
+
+accounts:
+  - email: prenm.nom@edu.devinci.fr
+    pass: TonMotDePasse
+    freq:
+      grades: 30
+      presence: 5
+      error: 120
+    hooks:
+      - triggers:
+        - type: presence
+          events: ["opened", "closed"]
+          group_prefix: ESILV-
+        - type: grades # experimental
+          events: ["*"]
+          hidden_fields: ['units', 'subjects', 'grades']
+          show_minor_updates: false
+        mode: DiscordWebHookV1
+        url: https://discordapp.com/api/webhooks/...
+
+      - triggers:
+          - type: grades
+            events: ["*"]
+            hidden_fields: ['units', 'subjects', 'grades']
+            show_minor_updates: true
+        mode: DiscordWebHookV1
+        url: https://discordapp.com/api/webhooks/...
+
+  # - email: nom2.prenom2@edu.devinci.fr
+  #   pass: "MotDePasseCompte2"
+  #   freq:
+  #     grades: 30
+  #     presence: 5
+  #     error: 120
+  #   hooks: []
+
+
+# Don't touch these unless you know what you are doing
+log_level: INFO
+cookies_cache: data/cookies_{id}.cache
+grades_cache: data/grades_{id}.json

@@ -23,8 +23,7 @@ class DataClass:
             return c
     
 class User(DataClass):
-    last_name: str
-    first_name: str
+    name: str
     id: str
     badge_number: int
     client_number: str

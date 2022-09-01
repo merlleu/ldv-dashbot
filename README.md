@@ -6,7 +6,6 @@ Recently, LDV decided to deploy the app MyDeVinci (com.devinci.mobile / fr.devin
 This app uses protocols such as OAuth2 for authentication, which is way better than the SAML (via cookies) implementation of the Bot.
 This is why you should consider using the API if the available endpoints are sufficients for your use case (should be more stable than our html parser).
 
-
 ## INSTALL 
 1. First, you have to download this repo
 2. Jump in the repo folder (after extracting it)
@@ -29,3 +28,15 @@ This is why you should consider using the API if the available endpoints are suf
 
 Cookie cache is a way to store session in a file to avoid the need to connect each time you restart the bot.
 This is recommanded if you are still in dev/test phase, as the login process takes a few seconds and this may be detectable if you restart too frequently !
+
+
+# ldv-watcher
+A bot based on ldv-dashbot to get webhooks when grades or presences are updated.
+At the moment, we only support discord webhooks on as hooks, but we may later allow any http request.
+
+## INSTALL USING DOCKER
+1. Run `git clone https://github.com/merlleu/ldv-dashbot && cd ldv-dashbot` to clone this repo.
+2. Create a data folder for persistance: `mkdir ./data`
+3. Rename `config.example.yaml` to `./data/config.yaml` and edit its content.
+3. Build the image using `docker build -t ldv-watcher .`
+4. Run using `docker run -d -v ./data:/app/data -v ./data/config.yaml:/app/config.yaml --name ldv-watcher ldv-watcher`

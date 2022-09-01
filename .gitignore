@@ -3,3 +3,5 @@ export.html
 cookies.cache
 *.html
 *.json
+config.yaml
+data/
