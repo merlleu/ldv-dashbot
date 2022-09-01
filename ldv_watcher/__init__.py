@@ -16,10 +16,10 @@ def start_account(account):
                 tasks.add('grades')
     
     if 'presence' in tasks:
-        threading.Thread(target=start_presence_loop, args=(account,)).start()
+        threading.Thread(target=start_presence_loop, args=(account,), name = f"presence-{account['email']}").start()
     
     if 'grades' in tasks:
-        threading.Thread(target=start_grades_loop, args=(account,)).start()
+        threading.Thread(target=start_grades_loop, args=(account,), name = f"presence-{account['email']}").start()
 
 for a in config['accounts']:
     start_account(a)

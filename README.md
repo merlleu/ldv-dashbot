@@ -39,4 +39,4 @@ At the moment, we only support discord webhooks on as hooks, but we may later al
 2. Build the image using `docker build -t ldv-watcher .`
 2. Create a data folder for persistance: `mkdir ./data`
 4. Rename `config.example.yaml` to `./data/config.yaml` and edit its content.
-5. Run using `docker run -d -v ./data:/app/data -v ./data/config.yaml:/app/config.yaml --name ldv-watcher ldv-watcher`
+5. Run using `docker run -d -v ${PWD}/data:/app/data -v ${PWD}/data/config.yaml:/app/config.yaml --name ldv-watcher ldv-watcher`
