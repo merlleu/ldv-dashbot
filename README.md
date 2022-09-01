@@ -36,7 +36,7 @@ At the moment, we only support discord webhooks on as hooks, but we may later al
 
 ## INSTALL USING DOCKER
 1. Run `git clone https://github.com/merlleu/ldv-dashbot && cd ldv-dashbot` to clone this repo.
+2. Build the image using `docker build -t ldv-watcher .`
 2. Create a data folder for persistance: `mkdir ./data`
-3. Rename `config.example.yaml` to `./data/config.yaml` and edit its content.
-3. Build the image using `docker build -t ldv-watcher .`
-4. Run using `docker run -d -v ./data:/app/data -v ./data/config.yaml:/app/config.yaml --name ldv-watcher ldv-watcher`
+4. Rename `config.example.yaml` to `./data/config.yaml` and edit its content.
+5. Run using `docker run -d -v ./data:/app/data -v ./data/config.yaml:/app/config.yaml --name ldv-watcher ldv-watcher`
