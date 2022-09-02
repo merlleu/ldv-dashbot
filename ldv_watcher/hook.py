@@ -1,6 +1,7 @@
 import logging
 import time
 import requests
+import json
 def send_webhook(url, c):
     while c:
         if len(c[0]) >= 1900: return logging.error('payload too long !')
@@ -15,7 +16,7 @@ def send_webhook(url, c):
         if c: time.sleep(1)
 
 def process_hooks(cfg, tp, op, data, renderer):
-    logging.debug(f"processing hook for tp={tp} & op={op}.")
+    logging.debug("processing hook {}.".format(json.dumps({'tp': tp, 'op': op, 'data': data})))
     for hook in cfg['hooks']:
         for trigger in hook['triggers']:
             if trigger['type'] == tp and (op in trigger['events'] or '*' in trigger['events']):
