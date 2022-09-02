@@ -20,14 +20,19 @@ def start_presence_loop(cfg):
             cfg['email'], message))
         return
     ical = ldv_dashbot.API_STUDENT_ICAL.format(profile['ical_token'])
-    cal_ = refresh_calendar(ical, cfg)
+    cal_ = None
 
     while True:
         try:
             presences = api.get_presences()
 
+            calendar_refreshed_ = False
             for i in presences:
                 if i['seance_id'] not in seances:
+                    if not calendar_refreshed_:
+                        calendar_refreshed_ = True
+                        cal_ = refresh_calendar(ical, cfg)
+                    
                     start_time, end_time = convert_horaire(i)
                     seances[i['seance_id']] = {
                         'group': recupGroupFromStartTime(cal_, i),
