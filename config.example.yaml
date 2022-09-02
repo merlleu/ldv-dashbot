@@ -15,7 +15,7 @@ accounts:
             - opened # when teacher opened presence
             - closed # when teacher closed presence
             # - student:ok # when student validated his presence
-            # - student:failed # when student did not validate his presence / is set absent
+            # - student:absent # when student did not validate his presence / is set absent, triggered at the end of the presence
             # - course:started # when the course started
             # - course:ended # when the course ended
           group_prefix: ESILV-

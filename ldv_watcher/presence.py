@@ -58,10 +58,17 @@ def start_presence_loop(cfg):
                         'zoom_url': i.get('zoom_url'),
                     }, render_presence_)
                     seance['appel_ouvert'] = False
+                    if i['etat_presence'] != 'présent':
+                        process_hooks(cfg, 'presence', 'student:absent', {
+                            'seance_id': i['seance_id'],
+                            'group': seance['group'],
+                            'name': i['nom'],
+                            'zoom_url': i.get('zoom_url'),
+                            'state': i['etat_presence'],
+                        }, render_presence_)
 
-                if seance['presence_state'] != i['etat_presence'] and time.time() <= seance['end_time']:
-                    state = 'ok' if i['etat_presence'] == 'présent' else 'failed'
-                    process_hooks(cfg, 'presence', 'student:{}'.format(state), {
+                if seance['presence_state'] != i['etat_presence'] and i['etat_presence'] == 'présent' and time.time() <= seance['end_time']:
+                    process_hooks(cfg, 'presence', 'student:ok', {
                         'seance_id': i['seance_id'],
                         'group': seance['group'],
                         'name': i['nom'],
@@ -95,6 +102,7 @@ def start_presence_loop(cfg):
                         'name': i['nom'],
                         'zoom_url': i.get('zoom_url'),
                     }, render_presence_)
+                    
 
 
 
@@ -159,7 +167,7 @@ def render_presence_(tp, op, data, hook):
             return [
                 f":white_check_mark: `{data['name']}` (`{data['group']}`) **Appel validé.**"
             ]
-        elif op == 'student:failed':
+        elif op == 'student:absent':
             return [
                 f":x: `{data['name']}` (`{data['group']}`) **Appel non validé ({data['state']}).**"
             ]
