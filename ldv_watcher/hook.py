@@ -15,7 +15,7 @@ def send_webhook(url, c):
         if c: time.sleep(1)
 
 def process_hooks(cfg, tp, op, data, renderer):
-    logging.info(f"processing hook for tp={tp} & op={op}.")
+    logging.debug(f"processing hook for tp={tp} & op={op}.")
     for hook in cfg['hooks']:
         for trigger in hook['triggers']:
             if trigger['type'] == tp and (op in trigger['events'] or '*' in trigger['events']):
@@ -23,3 +23,8 @@ def process_hooks(cfg, tp, op, data, renderer):
                 
                 if rendered:
                     send_webhook(hook['url'], rendered)
+
+def are_rules_matched(s, rules):
+    for i in rules:
+        if i == s or (i.endswith('*') and s.startswith(i[:-1])): return True
+    return False
