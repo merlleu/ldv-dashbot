@@ -248,9 +248,9 @@ class Bot:
     def get_seance_presence(self, seance_id: int):
         try:
             soup = self.request_html("GET", f"{PRESENCE_URI}{seance_id}")
-        except e:
+        except Exception as e:
             # handle not found !
-            if e.status_code == 302: raise PresenceSeanceNotFound(f"Couldn't find a seance with the id = {seance_id}.")
+            if e.status_code == 302: raise PresenceClassNotFound(f"Couldn't find a seance with the id = {seance_id}.")
             raise e
         
         tdl = soup.find("tbody").find_all("td")
@@ -375,7 +375,7 @@ class OAuth2Provider:
         
         return f'Bearer {self.access_token}'
 
-    def request(self, method, url, **kwargs) -> (dict, int):
+    def request(self, method, url, **kwargs):
         r = self.client.request(method, url, headers = {
             'Authorization': self.get_access_token()
         }, **kwargs)
