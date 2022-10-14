@@ -1,3 +1,4 @@
+import random
 import ldv_dashbot
 import logging
 import requests
@@ -15,11 +16,14 @@ def start_presence_loop(cfg):
     api = ldv_dashbot.Api(cfg['email'], cfg['pass'])
     profile = api.get_profile()
 
-    if 'error' in profile and profile['error'] == 'Token is invalid.':
-        time.sleep(5)
-        logging.error('presence[{}] :: token is invalid, retrying in 5s.'.format(cfg['email']))
-        return start_presence_loop(cfg)
-    
+    # since a few days (2022-10-14), the ADFS OpenID token endpoint returns JWT with
+    # future NBF (not before) claims (a few seconds in the future). This causes the JWT to be invalid for a few secs before being valid.
+    # This is a workaround to wait for the token to be valid before continuing.
+    # NOTE: a good thing would be to have a tolerance of 10s approx on the NBF (on LDV Side / or just remove NBF because it has no use on this API).
+    while 'error' in profile and profile['error'] == 'Token is invalid.':
+        time.sleep(random.random()*5)
+        profile = api.get_profile()
+
     if 'ical_token' not in profile:
         message = profile.get('message', profile)
         logging.error('presence[{}] :: Something went wrong: {}. Aborting.'.format(
