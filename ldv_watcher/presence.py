@@ -10,15 +10,22 @@ import dateutil.tz
 
 def start_presence_loop(cfg):
     logging.info('presence[{}] :: starting.'.format(cfg['email']))
-    api = ldv_dashbot.Api(cfg['email'], cfg['pass'])
-
     seances = {}
+
+    api = ldv_dashbot.Api(cfg['email'], cfg['pass'])
     profile = api.get_profile()
+
+    if 'error' in profile and profile['error'] == 'Token is invalid.':
+        time.sleep(5)
+        logging.error('presence[{}] :: token is invalid, retrying in 5s.'.format(cfg['email']))
+        return start_presence_loop(cfg)
+    
     if 'ical_token' not in profile:
         message = profile.get('message', profile)
         logging.error('presence[{}] :: Something went wrong: {}. Aborting.'.format(
             cfg['email'], message))
         return
+    
     ical = ldv_dashbot.API_STUDENT_ICAL.format(profile['ical_token'])
     cal_ = None
 
