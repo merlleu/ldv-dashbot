@@ -6,6 +6,8 @@ ABS_URI = LDVNET_URL + "/?my=abs"
 PRESENCE_URI = LDVNET_URL + "/student/presences/"
 PRESENCE_UPLOAD_URI = PRESENCE_URI + "upload.php"
 STUDENT_UPLOAD_URI = LDVNET_URL + "/student/upload.php"
+PROMOTION_AJAX_URI = LDVNET_URL + "/ajax/promotion";
+PROMOTION_URI = LDVNET_URL + "/promotion/";
 
 
 # -- myDeVinci app

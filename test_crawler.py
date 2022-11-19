@@ -15,6 +15,10 @@ with open('grades.json', 'wb') as f:
     # src.DataClass.json(d) allows you to transform any kind of data (dict, list, DataClass, and others) to a json-serializable object
     f.write(json.dumps(ldv_dashbot.DataClass.json(d), indent=2).encode('utf-8'))
 
+with open('promotions.json', 'wb') as f:
+    d = bot.get_promotion_data()
+    f.write(json.dumps(d, indent=2).encode('utf-8'))
+
 # with open('abs.json', 'wb') as f:
 #     a = bot.get_abs()
 #     f.write(json.dumps(src.DataClass.json(a), indent=2).encode('utf-8'))

@@ -8,6 +8,7 @@ import pickle, os, logging
 from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import time
+from . import parsers
 
 class BotConfig: 
     email = ''
@@ -15,6 +16,10 @@ class BotConfig:
     cookies_cache = None
 
 class NotImplemented(BaseException): pass
+
+requestValidationFailederror = Exception(
+    "Don't use a filter not supported by the website, you may end up stuck without the ability to change it back !\n"
+    "add the argument skip_check=True to avoid this error.")
 
 class Bot:
     def __init__(self, email, password, **kwargs):
@@ -305,12 +310,46 @@ class Bot:
     
     def set_lang(self, lang: str, skip_check: bool = False):
         if not skip_check and lang not in ['fr', 'en']:
-            raise Exception("Don't use a lang not supported by the website, you may end up stuck without the ability to change it back !\nadd the argument skip_check=True to avoid this error.")
+            raise requestValidationFailederror
         r = self.client.post(STUDENT_UPLOAD_URI, data= { 
             'act' : 'chg_lang',
             'lang' : lang
         })
         return r
+
+
+    # Update the promotion data filter
+    # When using get_promotion_data(filter=...)
+    def set_promotion_filter(self, filter: str, skip_check: bool = False):
+        if not skip_check and filter not in [
+            'TOUT_EVT', 'SALONS_EVT', 'FORUMS_EVT', 'DPE_EVT'
+        ]:
+            raise requestValidationFailederror
+        
+        r = self.client.post(PROMOTION_AJAX_URI, data = {
+            'act': 'filter_chg_evt', 
+            'filter': filter
+        })
+
+    # Request participation to a promotion event
+    def ask_for_promotion(self, promotion_id: str):
+        r = self.client.post(PROMOTION_AJAX_URI, data = {
+            'act': 'demande_participation',
+            'id': promotion_id
+        })
+        return r
+
+    def get_promotion_data(self, filter: str = 'TOUT_EVT', skip_check: bool = False):
+        soup = self.request_html("GET", PROMOTION_URI)
+        data = parsers.promo.PromotionParser(soup)
+        data.parse()
+    
+        if data.event_selector != filter:
+            self.set_promotion_filter(filter, skip_check)
+            return self.get_promotion_data(filter, skip_check)
+        
+        return data.events
+
 
 class OAuth2Provider:
     access_token = None

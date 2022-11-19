@@ -2,12 +2,14 @@ import getpass
 import ldv_dashbot
 import logging
 import json
+import time
 
 logging.basicConfig(level=logging.DEBUG)
 
 # app mode
 api = ldv_dashbot.Api(input('Email > '), getpass.getpass("Password > "))
-
+api.get_profile()
+time.sleep(5)
 with open('profile.json', 'wb') as f:
     user = api.get_profile()
     print(f"Connected as {user}")
