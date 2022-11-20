@@ -7,9 +7,7 @@ from .config import config
 from dictdiffer import diff, patch, swap, revert
 from .hook import process_hooks
 
-def start_grades_loop(cfg):
-    logging.info('grades[{}] :: starting.'.format(cfg['email']))
-    bot = ldv_dashbot.Bot(cfg['email'], cfg['pass'], cookies_cache=config['cookies_cache'].format(id = sanitize(cfg['email'])), )
+def start_grades_loop(cfg, bot):
     logging.info("grades[{}] :: started.".format(cfg['email']))
 
     cache_file = config['grades_cache'].format(id = sanitize(cfg['email']))
