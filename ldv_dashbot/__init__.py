@@ -66,7 +66,26 @@ class Bot:
         soup = BeautifulSoup(r.text, 'html.parser')
 
         # we get the next link (with a client-request-id set in the query params !)
-        next_link = 'https://adfs.devinci.fr' + soup.find(id = 'loginForm').get('action')
+        frm = soup.find(id = 'loginForm')
+
+        # sometimes there is an in-between page with a form to access the login page
+        # disabled this part unless the problem reappears
+        # if frm is None:
+        #     frm = soup.find('form')
+        #     next_link = frm['action']
+        #     data = {}
+        #     for i in frm.find_all('input'):
+        #         if i.get('name'):
+        #             data[i['name']] = i['value']
+            
+        #     r = self.client.post(next_link, data=data)
+    
+        #     if r.status_code != 200:
+        #         raise AuthError(str(r))
+        #     soup = BeautifulSoup(r.text, 'html.parser')
+        #     frm = 'https://adfs.devinci.fr' + soup.find(id = 'loginForm')
+
+        next_link = 'https://adfs.devinci.fr' + frm['action']
         
         # next step is to make a post request to the `next_link` url with user credentials
         r = self.client.post(next_link, data={
@@ -345,6 +364,7 @@ class Bot:
         data.parse()
     
         if data.event_selector != filter:
+            logging.info(f"Changing promotion filter to {filter}.")
             self.set_promotion_filter(filter, skip_check)
             return self.get_promotion_data(filter, skip_check)
         

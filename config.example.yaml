@@ -23,6 +23,9 @@ accounts:
           events: ["*"]
           hidden_fields: ['units', 'subjects', 'grades']
           show_minor_updates: false
+        - type: promotions
+          events:
+            - created
         mode: DiscordWebHookV1
         url: https://discordapp.com/api/webhooks/...
 
@@ -47,4 +50,5 @@ accounts:
 log_level: INFO
 cookies_cache: data/cookies_{id}.cache
 grades_cache: data/grades_{id}.json
+promotions_cache: data/promotions_{id}.json
 timezone: Europe/Paris

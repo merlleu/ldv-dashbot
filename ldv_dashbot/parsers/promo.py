@@ -69,9 +69,10 @@ class PromotionParser:
         meta = {}
         for tr in div.select('tr'):
             tds = tr.select('td')
-            data_type = tds[0].select('i')[0]['class'][0].split('-')[1]
-            data_value = tds[1].text.strip()
-            meta[data_type] = self._cleanup_str(data_value)
+            for i in range(0, len(tds), 2):
+                data_type = tds[i].select('i')[0]['class'][0].split('-')[1]
+                data_value = tds[i+1].text.strip()
+                meta[data_type] = self._cleanup_str(data_value)
         
         return meta
 
