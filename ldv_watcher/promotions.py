@@ -48,7 +48,7 @@ def render_promotions_(_tp, _op, data, hook):
 
     if _op == 'created':
         payload += [
-            "**:gift: NOUVEL EVENEMENT PROMOTION :gift:**",
+            f"**:gift: NOUVEL EVENEMENT PROMOTION: **{event['type']} :gift:",
 
             "**Nom**",
             f"> {event['title']}",
