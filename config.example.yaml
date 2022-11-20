@@ -6,6 +6,7 @@ accounts:
     freq:
       grades: 30
       presence: 5
+      promotions: 5
       error: 120
     hooks:
       - triggers:

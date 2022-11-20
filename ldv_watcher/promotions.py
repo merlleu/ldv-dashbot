@@ -24,8 +24,8 @@ def start_promotions_loop(cfg, bot: ldv_dashbot.Bot):
 
             if not skip: 
                 # v1: only track new events
-                old_events = set([e['id'] for e in old['events']])
-                for e in new['events']:
+                old_events = set([e['id'] for e in old])
+                for e in new:
                     if e['id'] not in old_events:
                         process_hooks(cfg, 'promotions', 'created', {
                             'event': e,
@@ -48,12 +48,11 @@ def render_promotions_(_tp, _op, data, hook):
 
     if _op == 'created':
         payload += [
-            "**:gift: NOUVEL EVENT PROMOTION**",
+            "**:gift: NOUVEL EVENEMENT PROMOTION :gift:**",
 
             "**Nom**",
             f"> {event['title']}",
-            "**Description**",
-            f"> {event['description']}",
+
             "**Date**",
             f"> {event['meta']['calendar']}",
 
@@ -76,9 +75,15 @@ def render_promotions_(_tp, _op, data, hook):
                 f"> {', '.join(event['labels'])}"
             ]
 
+        if event['description']:
+            payload += [
+                "**Description**",
+                f"> {event['description']}",
+            ]
+
         
 
-    return payload
+    return [_.replace('\n', '\n> ') for _ in payload]
 
 def sanitize(s):
     return ''.join([(c if c in 'abcdefghijklmnopqrstuvwxyz' else "_") for c in s])
