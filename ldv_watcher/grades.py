@@ -90,7 +90,7 @@ def renderDict(u, skiplist=[]):
 def renderPath(d, path):
     p = []
     for k in path:
-        if isinstance(d, dict) and k not in d:
+        if isinstance(d, dict) and k not in d or isinstance(d, list) and k >= len(d):
             break
         d = d[k]
         if isinstance(d, dict):
