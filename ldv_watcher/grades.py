@@ -26,7 +26,7 @@ def start_grades_loop(cfg, bot):
             
             if not skip: 
                 diffs =  list(diff(old, new))
-                process_hooks(cfg, 'grades', '_', {
+                process_hooks(cfg, 'grades', 'diff', {
                     'new': new,
                     'old': old,
                     'diffs': diffs

@@ -48,7 +48,7 @@ class PromotionParser:
 
     # select the <span> tag with the class "label-warning" within the <div> tag
     def _parse_event_type(self, div):
-        span = div.select('span.label-warning')[0]
+        span = div.select('p.pull-right span.label')[0]
         return span.text.strip()
 
     # select the <div> tags within div with class "caption"
