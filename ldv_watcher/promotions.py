@@ -54,7 +54,7 @@ def render_promotions_(_tp, _op, data, hook):
             f"> {event['title']}",
 
             "**Date**",
-            f"> {event['meta']['calendar']}",
+            f"> {event['meta']['calendar']} - {event['meta']['time']}",
 
             "**Places restantes**",
             f"> {event['registrations']['students']['remaining']} / {event['registrations']['students']['total']}",
