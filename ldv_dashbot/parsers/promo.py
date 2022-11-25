@@ -1,5 +1,6 @@
 import re
-
+import hashlib
+import json
 
 class PromotionParser:
     def __init__(self, soup):
@@ -31,7 +32,7 @@ class PromotionParser:
 
     #
     def _parse_event(self, div):
-        return {
+        d = {
             'title': self._parse_event_title(div),
             'type': self._parse_event_type(div),
             'id': self._get_event_id(div),
@@ -40,6 +41,20 @@ class PromotionParser:
             'labels': self._parse_event_labels(div),
             **self._parse_event_thumbnails(div)
         }
+
+        d['hash'] = self._get_event_hash(d)
+
+        return d
+
+    def _get_event_hash(self, d):
+        j = json.dumps([
+            d['title'],
+            d['description'], 
+            d['meta']['calendar'], 
+            d['meta']['time'], 
+            d['meta']['map']
+        ])
+        return hashlib.md5(j.encode('utf-8')).hexdigest()
 
     # select the <h4> tag within div with class "media-heading"
     def _parse_event_title(self, div):
@@ -124,7 +139,8 @@ class PromotionParser:
 
     # get the span tag with the class "promo-student-demande" and return the data-id attribute
     def _get_event_id(self, div):
-        return div.select('span.promo-student-demande')[0]['data-id']
+        q = div.select('span.promo-student-demande')
+        return q[0]['data-id'] if len(q) > 0 else None
     
     # get the div with class alert-info and return the text
     def _get_event_description(self, div):
