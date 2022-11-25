@@ -21,9 +21,11 @@ accounts:
             # - course:ended # when the course ended
           group_prefix: ESILV-
         - type: grades # experimental
-          events: ["*"]
-          hidden_fields: ['units', 'subjects', 'grades']
-          show_minor_updates: false
+          events:
+            - grade:created # when an exam is added
+            - grade:set # when a grade is available
+            - grade:updated # when a grade is changed
+          min_update_delta: 1 # only send grade:updated events when abs(new-old)>=delta
         - type: promotions
           events:
             - created
