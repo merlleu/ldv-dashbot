@@ -42,11 +42,11 @@ class PromotionParser:
             **self._parse_event_thumbnails(div)
         }
 
-        d['hash'] = self._get_event_hash(d)
+        d['hash'] = PromotionParser._get_event_hash(d)
 
         return d
 
-    def _get_event_hash(self, d):
+    def _get_event_hash(d):
         j = json.dumps([
             d['title'],
             d['description'], 
