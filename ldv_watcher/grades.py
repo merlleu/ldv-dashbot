@@ -33,45 +33,46 @@ def start_grades_loop(cfg, bot):
                     'diffs': diffs
                 }, render_grades_diff_)
 
-                if diffs:
+                if diffs or True:
                     old_grades = {}
                     new_grades = {}
-                    for sem in new:
-                        for sub in sem['subjects']:
-                            for exam in sub['grades']:
-                                new_grades[
-                                    (sem['semester'], sub['name'], exam['name'])
-                                ] = exam
+                    for semester in old:
+                        for unit in semester['units']:
+                            for subject in unit['subjects']:
+                                for grade in subject['grades']:
+                                    old_grades[(unit['name'], subject['name'], grade['name'])] = grade
+                    
+                    for semester in new:
+                        for unit in semester['units']:
+                            for subject in unit['subjects']:
+                                for grade in subject['grades']:
+                                    new_grades[(unit['name'], subject['name'], grade['name'])] = grade
 
-                    for sem in old:
-                        for sub in sem['subjects']:
-                            for exam in sub['grades']:
-                                old_grades[
-                                    (sem['semester'], sub['name'], exam['name'])
-                                ] = exam
-
+                    
                     for (sem, sub, exam), new_grade in new_grades.items():
                         if (sem, sub, exam) in old_grades:
                             old_grade = old_grades[(sem, sub, exam)]
-                            if old_grade.get('grade') is None and new_grade['grade'] is not None:
-                                process_hooks(cfg, 'grades', 'grades:set', {
+                            
+                            if old_grade.get('grade') is None and new_grade.get('grade') is not None:
+                                
+                                process_hooks(cfg, 'grades', 'grade:set', {
                                     'new': new_grade,
                                     'path': (sem, sub, exam)
                                 }, render_grades_update_)
                             elif old_grade.get('grade') != new_grade.get('grade'):
-                                process_hooks(cfg, 'grades', 'grades:updated', {
+                                process_hooks(cfg, 'grades', 'grade:updated', {
                                     'path': (sem, sub, exam),
                                     'new': new_grade,
                                     'old': old_grade
                                 }, render_grades_update_)
                         else:
-                            process_hooks(cfg, 'grades', 'grades:created', {
+                            process_hooks(cfg, 'grades', 'grade:created', {
                                 'new': new_grade,
                                 'path': (sem, sub, exam)
                             }, render_grades_update_)
 
                             if new_grade['grade'] is not None:
-                                process_hooks(cfg, 'grades', 'grades:set', {
+                                process_hooks(cfg, 'grades', 'grade:set', {
                                     'new': new_grade,
                                     'path': (sem, sub, exam)
                                 }, render_grades_update_)
