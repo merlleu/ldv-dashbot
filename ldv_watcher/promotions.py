@@ -49,6 +49,8 @@ def start_promotions_loop(cfg, bot: ldv_dashbot.Bot):
 
 
 def render_promotions_(_tp, _op, data, hook):
+    if hook.get('skip_alumni_events', False) and "ANCIENS UNIQUEMENT" in data['event']['labels']:
+        return None
     payload = []
     s = set()
     event = data['event']

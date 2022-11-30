@@ -29,6 +29,7 @@ accounts:
         - type: promotions
           events:
             - created
+          skip_alumni_events: true
         mode: DiscordWebHookV1
         url: https://discordapp.com/api/webhooks/...
 
