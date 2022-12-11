@@ -130,6 +130,9 @@ class Bot:
 
     def request_html(self, method, url, **kwargs):
         r = self.client.request(method, url, **kwargs, allow_redirects=False)
+        if r.status_code == 301:
+            self.login(False)
+            return self.request(method, url, **kwargs)
         if r.status_code != 200:
             raise UnsuccessfullResponse(r)
         
