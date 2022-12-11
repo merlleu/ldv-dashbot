@@ -6,10 +6,14 @@ from .utils import sleep
 from .config import config
 from .hook import process_hooks
 
+from ldv_dashbot.parsers.promo import PromotionParser
+
+
 def start_promotions_loop(cfg, bot: ldv_dashbot.Bot):
     logging.info("promotions[{}] :: started.".format(cfg['email']))
 
-    cache_file = config.get('promotions_cache', 'data/promotions_{id}.json').format(id = sanitize(cfg['email']))
+    cache_file = config.get(
+        'promotions_cache', 'data/promotions_{id}.json').format(id=sanitize(cfg['email']))
     while True:
         try:
             new = bot.get_promotion_data()
@@ -22,16 +26,18 @@ def start_promotions_loop(cfg, bot: ldv_dashbot.Bot):
                 # so we only store the new file
                 skip = True
 
-            if not skip: 
+            if not skip:
                 # v1: only track new events
-                old_events = set([e['id'] for e in old])
+                old_events = set([
+                    (e['hash'] if 'hash' in e else PromotionParser._get_event_hash(e))
+                    for e in old])
                 for e in new:
-                    if e['id'] not in old_events:
+                    if e['hash'] not in old_events:
                         process_hooks(cfg, 'promotions', 'created', {
                             'event': e,
                         }, render_promotions_)
-            
-            with open(cache_file,'w') as f:
+
+            with open(cache_file, 'w') as f:
                 f.write(json.dumps(new, indent=2))
             sleep(cfg, 'promotions', 5)
         except requests.exceptions.ConnectionError:
@@ -41,7 +47,10 @@ def start_promotions_loop(cfg, bot: ldv_dashbot.Bot):
             traceback.print_exc()
             sleep(cfg, 'error', 120)
 
+
 def render_promotions_(_tp, _op, data, hook):
+    if hook.get('skip_alumni_events', False) and "ANCIENS UNIQUEMENT" in data['event']['labels']:
+        return None
     payload = []
     s = set()
     event = data['event']
@@ -54,7 +63,7 @@ def render_promotions_(_tp, _op, data, hook):
             f"> {event['title']}",
 
             "**Date**",
-            f"> {event['meta']['calendar']}",
+            f"> {event['meta']['calendar']} - {event['meta']['time']}",
 
             "**Places restantes**",
             f"> {event['registrations']['students']['remaining']} / {event['registrations']['students']['total']}",
@@ -81,9 +90,8 @@ def render_promotions_(_tp, _op, data, hook):
                 f"> {event['description']}",
             ]
 
-        
-
     return [_.replace('\n', '\n> ') for _ in payload]
+
 
 def sanitize(s):
     return ''.join([(c if c in 'abcdefghijklmnopqrstuvwxyz' else "_") for c in s])
@@ -97,8 +105,10 @@ def recget(u, k):
             return None
     return u
 
+
 def renderDict(u, skiplist=[]):
-    return json.dumps({k:v for k,v in u.items() if k not in skiplist}, indent=4, ensure_ascii=False)
+    return json.dumps({k: v for k, v in u.items() if k not in skiplist}, indent=4, ensure_ascii=False)
+
 
 def renderPath(d, path):
     p = []
@@ -107,6 +117,6 @@ def renderPath(d, path):
             break
         d = d[k]
         if isinstance(d, dict):
-            p.append("`{}`".format(d['name'] if 'name' in d else f"Semester {d['semester']}"))
+            p.append("`{}`".format(
+                d['name'] if 'name' in d else f"Semester {d['semester']}"))
     return " > ".join(p)
-    
