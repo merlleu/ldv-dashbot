@@ -373,6 +373,26 @@ class Bot:
         
         return data.events
 
+    def get_evaluation_cours(self, url: str):
+        * _, yr, course = url.split('/')
+        soup = self.request_html("GET", STUDENT_EVALUATIONS_URL.format(y=yr, c=course))
+        data = parsers.evaluation.EvaluationParser(soup)
+        data.parse()
+        return data.inputs
+
+    # def set_evaluation_cours(self, period: int, course: str, nb_question: int, answers: dict):
+    #     r = self.client.post(STUDENT_COURS_UPLOAD_URL, data = {
+    #         'act': 'evaluation_cours',
+    #         'periode': period,
+    #         'cours': course,
+    #         'nb_question': nb_question,
+    #         **answers
+    #     })
+    #     return r
+
+    def send_cours_upload_raw(self, data):
+        r = self.client.post(STUDENT_COURS_UPLOAD_URL, data = data)
+        return r
 
 class OAuth2Provider:
     access_token = None
