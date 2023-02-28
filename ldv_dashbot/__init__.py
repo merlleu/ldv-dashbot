@@ -180,7 +180,7 @@ class Bot:
                                 if a:
                                     subject.evaluation_link = a.get('href')
                                 else:
-                                    subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
+                                    subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].select('span.badge')[0].contents[0].strip().split(' / '))
                                     if len(i.contents[1].contents) > 6:
                                         subject.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
                                         subject.coeff = float(i.contents[1].contents[10].contents[0].split(' ')[-1])
@@ -199,7 +199,7 @@ class Bot:
                                         )
 
                                         if len(i.contents[1].contents[3].contents) > 1:
-                                            grade.grade, grade.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
+                                            grade.grade, grade.max_grade = map(float, i.contents[1].contents[3].select('span.badge')[0].contents[0].strip().split(' / '))
                                             # the html is sometimes glitched :)
                                             if len(i.contents[1].contents) > 6:
                                                 grade.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
