@@ -393,6 +393,14 @@ class Bot:
     def send_cours_upload_raw(self, data):
         r = self.client.post(STUDENT_COURS_UPLOAD_URL, data = data)
         return r
+    
+    # Each minute, the frontend sends a heartbeat to the server
+    # This has probably no use at all except for stats.
+    def send_heartbeat(self, promotion_id: str):
+        r = self.client.post(INTERACTIONS_URL, data = {
+            'act': 'heartbeat',
+        })
+        return r
 
 class OAuth2Provider:
     access_token = None

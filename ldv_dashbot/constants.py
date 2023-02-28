@@ -10,6 +10,7 @@ PROMOTION_AJAX_URI = LDVNET_URL + "/ajax/promotion"
 PROMOTION_URI = LDVNET_URL + "/promotion/"
 STUDENT_COURS_UPLOAD_URL = LDVNET_URL + "/student/cours/upload.php"
 STUDENT_EVALUATIONS_URL = LDVNET_URL + "/student/cours/evaluations/{y}/{c}"
+INTERACTIONS_URL = LDVNET_URL + "/interaction.php"
 
 
 # -- myDeVinci app
