@@ -148,6 +148,10 @@ class Bot:
         # with open("src/marks.html") as f:
         #     soup = BeautifulSoup(f.read(), 'html.parser')
         notes = soup.find(class_ = 'notes')
+        if notes is None:
+            time.sleep(3600)
+            self.login(False)
+            return self.get_grades()
 
         semesters = []
         
