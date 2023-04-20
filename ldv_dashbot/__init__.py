@@ -130,7 +130,7 @@ class Bot:
 
     def request_html(self, method, url, **kwargs):
         r = self.client.request(method, url, **kwargs, allow_redirects=False)
-        if r.status_code == 301:
+        if 300 <= r.status_code < 400:
             self.login(False)
             return self.request(method, url, **kwargs)
         if r.status_code != 200:
@@ -148,6 +148,12 @@ class Bot:
         # with open("src/marks.html") as f:
         #     soup = BeautifulSoup(f.read(), 'html.parser')
         notes = soup.find(class_ = 'notes')
+        if notes is None:
+            self.login(False)
+            time.sleep(10)
+            r = self.get_grades()
+            time.sleep(3600)
+            return r
 
         semesters = []
         
