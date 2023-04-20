@@ -186,7 +186,7 @@ class Bot:
                                 if a:
                                     subject.evaluation_link = a.get('href')
                                 else:
-                                    subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
+                                    subject.final_grade, subject.max_grade = map(float, i.contents[1].contents[3].select('span.badge')[0].contents[0].strip().split(' / '))
                                     if len(i.contents[1].contents) > 6:
                                         subject.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
                                         subject.coeff = float(i.contents[1].contents[10].contents[0].split(' ')[-1])
@@ -205,7 +205,7 @@ class Bot:
                                         )
 
                                         if len(i.contents[1].contents[3].contents) > 1:
-                                            grade.grade, grade.max_grade = map(float, i.contents[1].contents[3].contents[3].contents[1].contents[0].strip().split(' / '))
+                                            grade.grade, grade.max_grade = map(float, i.contents[1].contents[3].select('span.badge')[0].contents[0].strip().split(' / '))
                                             # the html is sometimes glitched :)
                                             if len(i.contents[1].contents) > 6:
                                                 grade.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
@@ -398,6 +398,14 @@ class Bot:
 
     def send_cours_upload_raw(self, data):
         r = self.client.post(STUDENT_COURS_UPLOAD_URL, data = data)
+        return r
+    
+    # Each minute, the frontend sends a heartbeat to the server
+    # This has probably no use at all except for stats.
+    def send_heartbeat(self, promotion_id: str):
+        r = self.client.post(INTERACTIONS_URL, data = {
+            'act': 'heartbeat',
+        })
         return r
 
 class OAuth2Provider:
