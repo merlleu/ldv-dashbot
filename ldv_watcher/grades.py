@@ -135,7 +135,7 @@ def render_grades_update_(_tp, op, data, hook):
         ]
     elif op == "grade:updated":  # when a grade is updated
         # if hook has a min_update_delta, we only send the update if the delta is greater than the min_update_delta
-        if hook.get('min_update_delta', 0) <= 0 or abs(data['new']['grade'] - data['old']['grade']) >= hook['min_update_delta']:
+        if data['new'].get('promo_average') and (hook.get('min_update_delta', 0) <= 0 or abs(data['new']['grade'] - data['old']['grade']) >= hook['min_update_delta']):
             return [
                 f"**:clown: NOTE MODIFIÉE** - {p} :clown:",
                 "**Moyenne de promotion**",
