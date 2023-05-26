@@ -139,7 +139,7 @@ def render_grades_update_(_tp, op, data, hook):
             return [
                 f"**:clown: NOTE MODIFIÉE** - {p} :clown:",
                 "**Moyenne de promotion**",
-                f"> {data['old']['promo_average']}/{data['old']['max_grade']} -> {data['new']['promo_average']}/{data['new']['max_grade']}",
+                f"> {data['old'].get('promo_average', '?')}/{data['old'].get('max_grade', '?')} -> {data['new'].get('promo_average', '?')}/{data['new'].get('max_grade', '?')}",
             ]
 
 
