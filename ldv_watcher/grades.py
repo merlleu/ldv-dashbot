@@ -39,7 +39,8 @@ def start_grades_loop(cfg, bot):
                     for semester in old:
                         for unit in semester['units']:
                             for subject in unit['subjects']:
-                                old_grades[(unit['name'], subject['name'], '@rattrapage')] = subject.get('rattrapage_grade')
+                                if 'rattrapage_grade' in subject:
+                                    old_grades[(unit['name'], subject['name'], '@rattrapage')] = subject['rattrapage_grade']
                                 for grade in subject['grades']:
                                     old_grades[(unit['name'], subject['name'], grade['name'])] = grade
                     
@@ -49,20 +50,14 @@ def start_grades_loop(cfg, bot):
                                 for grade in subject['grades']:
                                     new_grades[(unit['name'], subject['name'], grade['name'])] = grade
                                 
-                                new_grades[(unit['name'], subject['name'], '@rattrapage')] = subject.get('rattrapage_grade')
+                                if 'rattrapage_grade' in subject:
+                                    new_grades[(unit['name'], subject['name'], '@rattrapage')] = subject['rattrapage_grade']
 
                     
                     for (sem, sub, exam), new_grade in new_grades.items():
                         if (sem, sub, exam) in old_grades:
                             old_grade = old_grades[(sem, sub, exam)]
-                            if exam == '@rattrapage':
-                                if old_grade is None and new_grade is not None:
-                                    process_hooks(cfg, 'grades', 'grade:rattrapage:set', {
-                                        'grade': new_grade,
-                                        'path': (sem, sub)
-                                    })
-                                continue
-                            
+
                             if old_grade.get('grade') is None and new_grade.get('grade') is not None:
                                 
                                 process_hooks(cfg, 'grades', 'grade:set', {
@@ -76,6 +71,14 @@ def start_grades_loop(cfg, bot):
                                     'old': old_grade
                                 }, render_grades_update_)
                         else:
+                            if exam == '@rattrapage':
+                                if new_grade is not None:
+                                    process_hooks(cfg, 'grades', 'grade:rattrapage:set', {
+                                        'grade': new_grade,
+                                        'path': (sem, sub)
+                                    })
+                                continue
+                                
                             process_hooks(cfg, 'grades', 'grade:created', {
                                 'new': new_grade,
                                 'path': (sem, sub, exam)
