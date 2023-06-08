@@ -76,7 +76,7 @@ def start_grades_loop(cfg, bot):
                                     process_hooks(cfg, 'grades', 'grade:rattrapage:set', {
                                         'grade': new_grade,
                                         'path': (sem, sub)
-                                    })
+                                    }, render_grades_update_)
                                 continue
                                 
                             process_hooks(cfg, 'grades', 'grade:created', {
