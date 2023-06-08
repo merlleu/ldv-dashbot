@@ -193,7 +193,9 @@ class Bot:
                                     else:
                                         subject.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
                                         subject.coeff = float(i.contents[1].contents[5].contents[4].contents[0].split(' ')[-1])
-                            
+                                    r = i.select('span.label-inverse')
+                                    if r:
+                                        subject.rattrapage_grade = float(r[0].contents[0].split()[-1])
                             
                             # get subject public grades (sometimes they are all hidden !)
                             if len(i.contents) > 3:
