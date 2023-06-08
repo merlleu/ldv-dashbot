@@ -69,7 +69,7 @@ class PresenceState(Enum):
     OPEN = 1
     CLOSED = 2
     def can_submit(self):
-        return self == OPEN
+        return self == PresenceState.OPEN
 
 class Presence(DataClass):
     start_time: datetime.date
