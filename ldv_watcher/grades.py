@@ -57,6 +57,8 @@ def start_grades_loop(cfg, bot):
                     for (sem, sub, exam), new_grade in new_grades.items():
                         if (sem, sub, exam) in old_grades:
                             old_grade = old_grades[(sem, sub, exam)]
+                            if exam == '@rattrapage':
+                                continue
 
                             if old_grade.get('grade') is None and new_grade.get('grade') is not None:
                                 
