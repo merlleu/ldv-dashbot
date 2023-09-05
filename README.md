@@ -1,6 +1,8 @@
 # ldv-dashbot
 A library to help you automate interactions with LDV's dashboard (such as tracking grades updates)
 
+**NEW:** we just added support for telegram webhooks.
+
 ## What is the Api ?
 Recently, LDV decided to deploy the app MyDeVinci (com.devinci.mobile / fr.devinci.student).
 This app uses protocols such as OAuth2 for authentication, which is way better than the SAML (via cookies) implementation of the Bot.

@@ -139,12 +139,12 @@ def render_grades_update_(_tp, op, data, hook):
 
     if op == "grade:created":  # when an exam is added
         return [
-            f"**:man_detective: NOTE CRÉÉE** - {p} :man_detective:",
+            f"**🕵️ NOTE CRÉÉE** - {p} 🕵️",
         ]
     # when a grade is set for an exam (previous grade was None)
     elif op == "grade:set":
         return [
-            f"**:see_no_evil: NOTE DISPONIBLE** - {p} :see_no_evil:",
+            f"**🙈 NOTE DISPONIBLE** - {p} 🙈",
             "**Moyenne de promotion**",
             f"> {data['new']['promo_average']}/{data['new']['max_grade']}",
         ]
@@ -152,13 +152,13 @@ def render_grades_update_(_tp, op, data, hook):
         # if hook has a min_update_delta, we only send the update if the delta is greater than the min_update_delta
         if data['new'].get('promo_average') and (hook.get('min_update_delta', 0) <= 0 or abs(data['new']['grade'] - data['old']['grade']) >= hook['min_update_delta']):
             return [
-                f"**:clown: NOTE MODIFIÉE** - {p} :clown:",
+                f"**🤡 NOTE MODIFIÉE** - {p} 🤡",
                 "**Moyenne de promotion**",
                 f"> {data['old'].get('promo_average', '?')}/{data['old'].get('max_grade', '?')} -> {data['new'].get('promo_average', '?')}/{data['new'].get('max_grade', '?')}",
             ]
     elif op == "grade:rattrapage:set":
         return [
-            f"**:pleading_face: NOTE DE RATTRAPAGE DISPONIBLE** - {p} :pleading_face:",
+            f"**🥺 NOTE DE RATTRAPAGE DISPONIBLE** - {p} 🥺",
         ]
 
 

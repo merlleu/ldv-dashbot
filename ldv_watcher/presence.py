@@ -151,7 +151,7 @@ def render_presence_(tp, op, data, hook):
     if group_prefix is None or seance['group'].startswith('@') or seance['group'].startswith(group_prefix):
         if op == 'opened':
             return [
-                f":alarm_clock: `{presence['nom']}` (`{seance['group']}`) **Appel ouvert.**",
+                f"⏰ `{presence['nom']}` (`{seance['group']}`) **Appel ouvert.**",
                 f"**Présence : **<https://www.leonard-de-vinci.net/student/presences/{presence['seance_id']}>",
             ] + ([
                 "**Zoom : **<"+presence['zoom_url'] +
@@ -159,20 +159,20 @@ def render_presence_(tp, op, data, hook):
             ] if not seance['_zoom_sent'] else [])
         elif op == 'closed':
             return [
-                f":lock: `{presence['nom']}` (`{seance['group']}`) **Appel fermé.**"
+                f"🔒 `{presence['nom']}` (`{seance['group']}`) **Appel fermé.**"
             ]
         elif op == 'student:ok':
             return [
-                f":white_check_mark: `{presence['nom']}` (`{seance['group']}`) **Appel validé.**"
+                f"✅ `{presence['nom']}` (`{seance['group']}`) **Appel validé.**"
             ]
         elif op == 'student:absent':
             return [
-                f":x: `{presence['nom']}` (`{seance['group']}`) **Appel non validé ({presence['etat_presence']}).**"
+                f"❌ `{presence['nom']}` (`{seance['group']}`) **Appel non validé ({presence['etat_presence']}).**"
             ]
 
         elif op == 'course:started':
             return [
-                f":runner: `{presence['nom']}` (`{seance['group']}`) **Séance commencée.**"
+                f"🏃 `{presence['nom']}` (`{seance['group']}`) **Séance commencée.**"
             ] + ([
                 "**Zoom : **<"+presence['zoom_url'] +
                 ">" if presence.get('zoom_url') else 'Zoom désactivé.'
@@ -180,7 +180,7 @@ def render_presence_(tp, op, data, hook):
 
         elif op == 'course:ended':
             return [
-                f":beers: `{presence['nom']}` (`{seance['group']}`) **Séance terminée.**"
+                f"🍻 `{presence['nom']}` (`{seance['group']}`) **Séance terminée.**"
             ]
 
 

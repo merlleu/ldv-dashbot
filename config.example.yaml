@@ -42,6 +42,16 @@ accounts:
         mode: DiscordWebHookV1
         url: https://discordapp.com/api/webhooks/...
 
+      - triggers:
+          - type: grades
+            events: ["*"]
+            hidden_fields: ['units', 'subjects', 'grades']
+            show_minor_updates: true
+        mode: TelegramBotV1
+        telegram:
+          chat_id: -1232423423 # your chat id
+          token: 12332423423:ARFZAEHFDSZFSDFHSDOIHFSDOFHZSDE # your bot token
+
   # - email: nom2.prenom2@edu.devinci.fr
   #   pass: "MotDePasseCompte2"
   #   freq:
