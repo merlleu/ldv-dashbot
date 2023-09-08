@@ -167,7 +167,7 @@ def render_presence_(tp, op, data, hook):
 
         elif op == 'course:started':
             return [
-                f"🏃 `{presence['nom']}` (`{seance['group']}`) **Séance commencée.**"
+                f"🏃 `{presence['nom']}` (`{seance['group']}`) **Séance commencée.**",
                 ("**Zoom : **<"+presence['zoom_url'] + ">" if presence.get('zoom_url') else 'Zoom désactivé.')
             ]
 
