@@ -53,7 +53,6 @@ def start_presence_loop(cfg):
                         '_h': i['horaire'],
                         'start_time': start_time,
                         'end_time': end_time,
-                        '_zoom_sent': False,
                     }
 
                 seance = seances[i['seance_id']]
@@ -66,7 +65,6 @@ def start_presence_loop(cfg):
                         process_hooks(cfg, 'presence', 'opened',
                                       payload, render_presence_)
                         seance['appel_ouvert'] = True
-                        seance['_zoom_sent'] = True
 
                 elif seance['appel_ouvert']:
                     process_hooks(cfg, 'presence', 'closed',
@@ -93,7 +91,6 @@ def start_presence_loop(cfg):
                     seance['time_state'] = 'started'
                     process_hooks(cfg, 'presence', 'course:started',
                                   payload, render_presence_)
-                    seance['_zoom_sent'] = True
 
                 elif seance['time_state'] == 'started' and seance['end_time'] <= time.time():
                     seance['time_state'] = 'ended'
@@ -153,10 +150,8 @@ def render_presence_(tp, op, data, hook):
             return [
                 f"⏰ `{presence['nom']}` (`{seance['group']}`) **Appel ouvert.**",
                 f"**Présence : **<https://www.leonard-de-vinci.net/student/presences/{presence['seance_id']}>",
-            ] + ([
-                "**Zoom : **<"+presence['zoom_url'] +
-                ">" if presence.get('zoom_url') else 'Zoom désactivé.'
-            ] if not seance['_zoom_sent'] else [])
+                ("**Zoom : **<"+presence['zoom_url'] +">" if presence.get('zoom_url') else 'Zoom désactivé.')
+            ]
         elif op == 'closed':
             return [
                 f"🔒 `{presence['nom']}` (`{seance['group']}`) **Appel fermé.**"
@@ -173,10 +168,8 @@ def render_presence_(tp, op, data, hook):
         elif op == 'course:started':
             return [
                 f"🏃 `{presence['nom']}` (`{seance['group']}`) **Séance commencée.**"
-            ] + ([
-                "**Zoom : **<"+presence['zoom_url'] +
-                ">" if presence.get('zoom_url') else 'Zoom désactivé.'
-            ] if not seance['_zoom_sent'] else [])
+                ("**Zoom : **<"+presence['zoom_url'] + ">" if presence.get('zoom_url') else 'Zoom désactivé.')
+            ]
 
         elif op == 'course:ended':
             return [

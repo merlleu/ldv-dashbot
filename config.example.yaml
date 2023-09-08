@@ -3,10 +3,10 @@
 accounts:
   - email: prenm.nom@edu.devinci.fr
     pass: TonMotDePasse
-    freq:
+    freq: # number of seconds between each refresh
       grades: 30
       presence: 5
-      promotions: 5
+      promotions: 120
       error: 120
     hooks:
       - triggers:

@@ -61,7 +61,6 @@ def start_grades_loop(cfg, bot):
                                 continue
 
                             if old_grade.get('grade') is None and new_grade.get('grade') is not None:
-                                
                                 process_hooks(cfg, 'grades', 'grade:set', {
                                     'new': new_grade,
                                     'path': (sem, sub, exam)
