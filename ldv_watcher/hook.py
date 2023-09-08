@@ -65,21 +65,12 @@ def send_telegram_bot(tg, c):
         time.sleep(1)
 
 def preprocess_message_for_telegram(c):
-    rp = {
-        '**': '*',
-        '>': '\\>',
-        '_': '\\_',
-        '-': '\\-',
-        '<': '\\<',
-        '#': '\\#',
-        '+': '\\+',
-        '=': '\\=',
-        '/': '\\/',
-        '.': '\\.',
-    }
+    e = [
+        '_', '[', ']', '(', ')', '~', '`', '>', '#', '+', '-', '=', '|', '{', '}', '.', '!'
+    ]
     for i in range(len(c)):
-        s = c[i]
-        for k,v in rp.items():
-            s = s.replace(k, v)
+        s = c[i].replace('**', '*')
+        for k in e:
+            s = s.replace(k, f'\\{k}')
         c[i] = s
     return c
