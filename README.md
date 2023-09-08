@@ -1,4 +1,4 @@
-# ldv-dashbot
+# LDV DashBot 🎒
 A library to help you automate interactions with LDV's dashboard (such as tracking grades updates)
 
 **NEW:** we just added support for telegram webhooks.
@@ -31,7 +31,7 @@ Cookie cache is a way to store session in a file to avoid the need to connect ea
 This is recommanded if you are still in dev/test phase, as the login process takes a few seconds and this may be detectable if you restart too frequently !
 
 
-# ldv-watcher
+# ldv-watcher 🎒
 A bot based on ldv-dashbot to get webhooks when grades or presences are updated.
 At the moment, we only support discord webhooks on as hooks, but we may later allow any http request.
 
