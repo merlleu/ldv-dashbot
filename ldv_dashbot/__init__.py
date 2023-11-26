@@ -215,7 +215,7 @@ class Bot:
                                                 else:
                                                     grade.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
                                             except:
-                                                pass
+                                                grade.promo_average = '?'
                             
                                         subject.grades.append(grade)
                             
