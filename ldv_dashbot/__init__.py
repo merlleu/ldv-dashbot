@@ -208,11 +208,14 @@ class Bot:
 
                                         if len(i.contents[1].contents[3].contents) > 1:
                                             grade.grade, grade.max_grade = map(float, i.contents[1].contents[3].select('span.badge')[0].contents[0].strip().split(' / '))
-                                            # the html is sometimes glitched :)
-                                            if len(i.contents[1].contents) > 6:
-                                                grade.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
-                                            else:
-                                                grade.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
+                                            try:
+                                                # the html is sometimes glitched :)
+                                                if len(i.contents[1].contents) > 6:
+                                                    grade.promo_average = float(i.contents[1].contents[6].contents[0].split(' ')[-1])
+                                                else:
+                                                    grade.promo_average = float(i.contents[1].contents[5].contents[0].contents[0].split(' ')[-1])
+                                            except:
+                                                pass
                             
                                         subject.grades.append(grade)
                             
