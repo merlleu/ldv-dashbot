@@ -9,6 +9,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime, timedelta
 import time
 from . import parsers
+import json
 
 class BotConfig: 
     email = ''
@@ -49,19 +50,21 @@ class Bot:
         else:
             logging.debug("Logged-in from cache !")
 
-        next_link = self.client.post(AJAX_URL, data = {
+        js_payload = self.client.post(AJAX_URL, data = {
             'act': 'ident_analyse',
             'login': self.config.email
         }).text
 
-        # if the ajax doesn't redirect the email is not good !
-        if 'location' not in next_link:
-            raise InvalidCredentials("Invalid Email !")
-        next_link = next_link.split('"')[1].split('"')[0]
+        if js_payload.startswith('window.logging.connexion'):
+            # window.logging.connexion('{"alvsec":"6664580940406","login":"remi.langdorph@edu.devinci.fr"}');
+            json_payload = js_payload.split("'")[1]
+            data = json.loads(json_payload)
 
-        r = self.client.get(LDVNET_URL + next_link)
-        if r.status_code != 200:
-            raise AuthError(str(r))
+            r = self.client.get(LDVNET_URL + '/lssop/' + data['alvsec'] + '/' + data['login'])
+            if r.status_code != 200:
+                raise AuthError(str(r))
+        else:
+            raise AuthError(js_payload)
 
         soup = BeautifulSoup(r.text, 'html.parser')
 
@@ -167,8 +170,11 @@ class Bot:
                 for k in range(3, len(c), 2):
                     u = c[k].contents[1].contents
                     unit = SemesterUnit(name = _clean_string(u[1].contents[2]), subjects = [])
+                    semester.units.append(unit)
+
                     
-                    for i in u[3].contents:
+                    content = u[3].contents if len(u) > 3 else u[1].contents
+                    for i in content:
                         if i.name == 'li':
                             name = _clean_string(i.contents[1].contents[2]).split(" ")
 
@@ -221,7 +227,7 @@ class Bot:
                             
                             unit.subjects.append(subject)
                     
-                    semester.units.append(unit)
+                    
 
                 semesters.append(semester)
         
